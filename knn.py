@@ -13,10 +13,10 @@ class Point:
     cluster: int
 
 
-cluster_obj = {0: "red", 1: "blue", 2: "green", -1: "orange"}  # Заданные кластеры
-TRAINING_MODE_AMOUNT = 5  # Число точек, которые ставим и классифицируем сами
-optimal_k = None  # Глобальное оптимальное k, вычисляемое во время "обучения"
-optimal_probability = 0  # "Уверенность" текущего optimal_k
+cluster_obj = {0: "red", 1: "blue", 2: "green", -1: "orange"}
+TRAINING_MODE_AMOUNT = 5
+optimal_k = None
+optimal_probability = 0
 
 
 def text(surface, x, y, text, fontFace="Arial", size=18, colour=(123, 123, 123)):
@@ -61,9 +61,6 @@ def draw_result(points, training_mode_amount: int):
                             )
                 if event.type == pygame.KEYDOWN:
                     if points_validate[-1].cluster == -1:
-                        # Если кластера у точки нет, то прогоняем knn на k от 3 до sqrt(N) и выбираем самый вероятный
-                        # кластер и, если он совпал с выставленным вручную кластером, самое оптимальное значение k.
-                        # Если оно более оптимально чем ранее вычисленное, сохраняем его и используем в PREDICTION_MODE
                         prediction = kNN(points_validate[-1])
                         if event.key == pygame.K_1:
                             points_validate[-1].cluster = 0
@@ -123,11 +120,6 @@ def dist(p1, p2):
 
 
 def kNN(point) -> (float, int, int):
-    """
-    Применяем алгоритм knn к точке со значениями k от 3 до int(math.sqrt(len(points)))
-    Выбираем такое k, при котором "уверенность", т.е соотношение частота_кластера / k, максимальна
-    Возвращаем 3 значения - Уверенность, кластер и оптимальное k
-    """
     highest_probability = 0
     highest_probability_cluster = -1
     opt_k = None
@@ -148,9 +140,6 @@ def kNN(point) -> (float, int, int):
 
 
 def kNN_fixed_k(point, k) -> int:
-    """
-    Применяем к точке алгоритм knn с заданным параметром k
-    """
     k_nearest_clusters = map(
         lambda point: point.cluster, sorted(points, key=lambda p: dist(point, p))[:k]
     )
